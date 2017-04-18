@@ -23,27 +23,36 @@ function output(message, prefix, clr, action) {
 
 function toolkit() {
 
-    var _args = [],
+    var _output  = false,
+        _args    = [],
         _rawArgs = [],
-        _drive = {},
+        _drive   = {},
+        _path    = false,
         _command = false;
 
     this._isArray = function (input) {
         return (typeof input.push === 'function'
-        && typeof input.length === 'number');
+            && typeof input.length === 'number');
     };
 
-
-    this.push = function(cmd, args) {
+    this.push = function(cmd, path, args) {
         try {
             console.log('CMD');
             console.log(cmd);
+            console.log('PATH');
+            console.log(path);
             console.log('ARGS');
             console.log(args);
-            _ctl = require('./' + cmd);
-            _ctl.args(args).run();
+            _ctl = require('./' + cmd + '.js');
+
+            console.log('OBJ');
+            console.log(_ctl);
+
+            _output = _ctl.path(path).args(args).run();
+            console.log(_output);
 
         } catch (e) {
+            console.log(e.message);
             throw new Error(_err[_lang].controllerRenderErr + ': ' + cmd);
         }
     };
@@ -52,7 +61,9 @@ function toolkit() {
         try {
 
             _drive = this.parseAndMap(args);
-            this.push(_drive.cmd, _drive.args);
+            console.log('DRIVE');
+            console.log(_drive);
+            this.push(_drive.cmd, _drive.path, _drive.args);
 
         } catch (e) {
             console.log('');
@@ -71,10 +82,14 @@ function toolkit() {
                 _ignore = (_rawArgs[i].indexOf('nodejs') > -1 && _rawArgs[i].indexOf('cli.js') > -1)
                     ? i+1 : _ignore;
                 if (_ignore > 0 && i > _ignore) {
-                    if (_command === false) {
-                        _command = _rawArgs[i];
+                    if (_path === false) {
+                        _path = _rawArgs[i];
                     } else {
-                        _args.push(_rawArgs[i]);
+                        if (_command === false) {
+                            _command = _rawArgs[i];
+                        } else {
+                            _args.push(_rawArgs[i]);
+                        }
                     }
                 }
             }
@@ -85,6 +100,7 @@ function toolkit() {
                 throw new Error(_err[_lang].emptyCliArgs);
             }
             return JSON.parse(JSON.stringify({
+                path: _path,
                 cmd: _command,
                 args: _args
             }));
