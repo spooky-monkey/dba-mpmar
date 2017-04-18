@@ -1,12 +1,11 @@
-*.class
+# IDE
+.idea/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Modules artefacts
+nodejs/node_modules
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Log files
+*.log
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# Packaaged artefacts folder
+build/output/
